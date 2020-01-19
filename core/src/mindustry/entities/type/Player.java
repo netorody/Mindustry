@@ -335,6 +335,11 @@ public class Player extends Unit implements BuilderMinerTrait, ShooterTrait{
 
         mech.draw(this);
 
+        Draw.color(player.getTeam().color);
+        Draw.rect(mech.shaderTeam,x,y, rotation);
+        Draw.color();
+
+
         for(int i : Mathf.signs){
             float tra = rotation - 90, trY = -mech.weapon.getRecoil(this, i > 0) + mech.weaponOffsetY;
             float w = i > 0 ? -mech.weapon.region.getWidth() : mech.weapon.region.getWidth();
@@ -344,6 +349,17 @@ public class Player extends Unit implements BuilderMinerTrait, ShooterTrait{
             w * Draw.scl,
             mech.weapon.region.getHeight() * Draw.scl,
             rotation - 90);
+
+            if(mech.weapon != null){
+                Draw.color(player.team.color);
+                Draw.rect(mech.weapon.weaponShader,
+                x + Angles.trnsx(tra, (mech.weaponOffsetX + mech.spreadX(this)) * i, trY),
+                y + Angles.trnsy(tra, (mech.weaponOffsetX + mech.spreadX(this)) * i, trY),
+                w * Draw.scl,
+                mech.weapon.weaponShader.getHeight() * Draw.scl,
+                rotation - 90);
+                Draw.color();
+            }
         }
 
         Draw.reset();

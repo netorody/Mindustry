@@ -44,7 +44,7 @@ public class Mech extends UnlockableContent{
     public float weaponOffsetX, weaponOffsetY, engineOffset = 5f, engineSize = 2.5f;
     public @NonNull Weapon weapon;
 
-    public TextureRegion baseRegion, legRegion, region;
+    public TextureRegion baseRegion, legRegion, shaderTeam, region;
 
     public Mech(String name, boolean flying){
         super(name);
@@ -125,6 +125,7 @@ public class Mech extends UnlockableContent{
 
     @Override
     public void load(){
+        super.load();
         weapon.load();
         if(!flying){
             legRegion = Core.atlas.find(name + "-leg");
@@ -132,6 +133,7 @@ public class Mech extends UnlockableContent{
         }
 
         region = Core.atlas.find(name);
+        shaderTeam = Core.atlas.find(name + "-shader-team");
     }
 
     @Override

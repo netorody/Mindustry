@@ -61,6 +61,7 @@ public class Weapon{
     public Sound shootSound = Sounds.pew;
 
     public TextureRegion region;
+    public TextureRegion weaponShader;
 
     protected Weapon(String name){
         this.name = name;
@@ -127,6 +128,7 @@ public class Weapon{
 
     public void load(){
         region = Core.atlas.find(name + "-equip", Core.atlas.find(name, Core.atlas.find("clear")));
+        weaponShader = Core.atlas.find(name + "-equip-shader-team");
     }
 
     public void update(ShooterTrait shooter, float pointerX, float pointerY){

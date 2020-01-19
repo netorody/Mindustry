@@ -210,7 +210,7 @@ public class Mechs implements ContentList{
                 Shaders.build.progress = player.shootHeat;
                 Shaders.build.region = armorRegion;
                 Shaders.build.time = Time.time() / 10f;
-                Shaders.build.color.set(Pal.accent).a = player.shootHeat;
+                Shaders.build.color.set(player.getTeam().color).a = player.shootHeat;
                 Draw.shader(Shaders.build);
                 Draw.rect(armorRegion, player.x, player.y, player.rotation);
                 Draw.shader();
