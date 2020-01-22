@@ -148,14 +148,6 @@ public class HudFragment extends Fragment{
                 userInfo = new Table(Tex.infoPanel.tint(Pal.salmon));
                 userInfo.margin(0,0,0,11f);
 
-                //User info
-                avatar.update(()-> {
-                    if(player.mech != mech){
-                        mech = player.mech;
-                        ((TextureRegionDrawable)avatarShip.getDrawable()).setRegion(mech.icon(Cicon.full));
-                    }
-                });
-
                 Pal.slatebluegray.a = 1f;
                 Table health = new Table(Tex.shipShape.tint(Pal.slatebluegray));
                 health.margin(0,15f,0,25f);
@@ -170,6 +162,7 @@ public class HudFragment extends Fragment{
 
                 Button waves = new Button(Styles.noneStyle);
                 Table btable = new Table();
+
                 waves.margin(0);
 
                 btable.margin(0,-33,0,0);
@@ -179,14 +172,23 @@ public class HudFragment extends Fragment{
                 addWaveTable(waves);
 
                 Table bar = new Table();
-                Bar teste = new Bar("empty2", Pal.accent, () -> player.healthf()).blink(Color.white);
-                bar.add(teste).height(56f).width(24f);
+                Bar healthBar = new Bar("empty2", Pal.accent, () -> player.healthf()).blink(Color.white);
+                bar.add(healthBar).height(56f).width(24f);
                 bar.margin(0,0,0,-140f);
 
                 //add
                 infoBar.add(bar,userInfo);
                 infoBar.add(waves).width(250f);
                 infoPanel.add(infoBar,btable);
+
+                //User info
+                avatar.update(()-> {
+                    if(player.mech != mech){
+                        mech = player.mech;
+                        ((TextureRegionDrawable)avatarShip.getDrawable()).setRegion(mech.icon(Cicon.full));
+                    }
+                });
+
             }
 
             {
@@ -630,7 +632,6 @@ public class HudFragment extends Fragment{
             builder.setLength(0);
             builder.append("[#" + Pal.accent + "]");
             builder.append(wavef.get(state.wave));
-            builder.append("\n");
 
             if(inLaunchWave()){
                 builder.append("[#");
@@ -638,28 +639,35 @@ public class HudFragment extends Fragment{
                 builder.append("]");
 
                 if(!canLaunch()){
+                    builder.append("\n");
                     builder.append(Core.bundle.get("launch.unable2").toUpperCase());
                 }else{
+                    builder.append("\n");
+                    builder.append("[#" + Pal.health + "]");
                     builder.append(Core.bundle.get("launch").toUpperCase());
                     builder.append("\n");
-                    builder.append(Core.bundle.format("launch.next", state.wave + world.getZone().launchPeriod).toUpperCase());
-                    builder.append("\n");
+                    builder.append("[#" + Pal.lightishGray + "]");
+                    builder.append(Core.bundle.format("launch.next", state.wave + world.getZone().launchPeriod));
                 }
-                builder.append("[]\n");
             }
 
             if(state.rules.waveTimer){
+                builder.append("\n");
+                builder.append("[#" + Color.white + "]");
                 builder.append((state.rules.waitForWaveToEnd && state.enemies > 0 ? Core.bundle.get("wave.waveInProgress") : ( waitingf.get((int)(state.wavetime/60)))));
             }else if(state.enemies == 0){
+                builder.append("\n");
                 builder.append("[#" + Color.white + "]");
                 builder.append(Core.bundle.get("waiting"));
             }
 
             if(state.enemies > 0){
                 if(state.enemies == 1){
+                    builder.append("\n");
                     builder.append("[#" + Pal.salmon + "]");
                     builder.append(enemyf.get(state.enemies));
                 }else{
+                    builder.append("\n");
                     builder.append("[#" + Pal.salmon + "]");
                     builder.append(enemiesf.get(state.enemies));
                 }
@@ -682,7 +690,7 @@ public class HudFragment extends Fragment{
     }
 
     private void addPlayButton(Table table){
-        table.right().addImageButton(Icon.play,Styles.nWave,30f, () -> {
+        table.right().addImageButton(Icon.next,Styles.nWave,30f, () -> {
             if(net.client() && player.isAdmin){
                 Call.onAdminRequest(player, AdminAction.wave);
             }else if(inLaunchWave()){

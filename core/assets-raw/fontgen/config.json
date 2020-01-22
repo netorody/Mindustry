@@ -903,6 +903,20 @@
       "search": [
         "command-retreat"
       ]
+    },
+    {
+      "uid": "b6b03bd2510aec8f61eac10f5b9c1c61",
+      "css": "next",
+      "code": 59483,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M591.7 0H133.3L400 500 133.3 1000H591.7L858.3 500 591.7 0Z",
+        "width": 1000
+      },
+      "search": [
+        "next"
+      ]
     }
   ]
 }
