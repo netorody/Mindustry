@@ -24,9 +24,9 @@ import static mindustry.gen.Tex.*;
 @StyleDefaults
 public class Styles{
     public static Drawable black, black9, black8, black6, black3, none, flatDown, flatOver;
-    public static ButtonStyle defaultb, waveb;
+    public static ButtonStyle defaultb, waveb, noneStyle;
     public static TextButtonStyle defaultt, squaret, nodet, cleart, discordt, infot, clearPartialt, clearTogglet, clearToggleMenut, togglet, transt;
-    public static ImageButtonStyle defaulti, nodei, righti, emptyi, emptytogglei, selecti, cleari, clearFulli, clearPartiali, clearPartial2i, clearTogglei, clearTransi, clearToggleTransi, clearTogglePartiali;
+    public static ImageButtonStyle nWave, defaulti, nodei, righti, emptyi, emptytogglei, selecti, cleari, clearFulli, clearPartiali, clearPartial2i, clearTogglei, clearTransi, clearToggleTransi, clearTogglePartiali;
     public static ScrollPaneStyle defaultPane, horizontalPane, smallPane;
     public static KeybindDialogStyle defaultKeybindDialog;
     public static SliderStyle defaultSlider, vSlider;
@@ -45,11 +45,28 @@ public class Styles{
         flatDown = createFlatDown();
         flatOver = whiteui.tint(Color.valueOf("454545"));
 
+        noneStyle = new ButtonStyle(){{
+            down = none;
+            up = none;
+            over = none;
+            disabled = none;
+        }};
+
         defaultb = new ButtonStyle(){{
             down = buttonDown;
             up = button;
             over = buttonOver;
             disabled = buttonDisabled;
+        }};
+
+        nWave = new ImageButtonStyle(){{
+            Pal.lgslategray.a = 0.7f;
+            down = nexWave.tint(Pal.lgslategray);
+            up = nexWave.tint(Pal.lgslategray);
+            Pal.lgslategray.a = 1f;
+            over = nexWave.tint(Pal.lgslategray);
+            Pal.lgslategray.a = 0.5f;
+            disabled = nexWave.tint(Pal.lgslategray);
         }};
         
         waveb = new ButtonStyle(){{
@@ -66,6 +83,7 @@ public class Styles{
             disabledFontColor = Color.gray;
             down = buttonDown;
             up = button;
+
         }};
         squaret = new TextButtonStyle(){{
             font = Fonts.def;

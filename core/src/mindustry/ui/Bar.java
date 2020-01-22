@@ -71,22 +71,37 @@ public class Bar extends Element{
         blink = Mathf.lerpDelta(blink, 0f, 0.2f);
         value = Mathf.lerpDelta(value, computed, 0.15f);
 
-        Drawable bar = Tex.bar;
+        if(height > width){
 
-        Draw.colorl(0.1f);
-        bar.draw(x, y, width, height);
-        Draw.color(color, blinkColor, blink);
+            Drawable bar = Tex.whiteui;
+            Draw.colorl(0.1f);
+            Draw.color(color, blinkColor, blink);
+            Drawable top = Tex.whiteui;
+            float topWidth = width * value;
+            float topHeight = height * value;
+            bar.draw(x, y, width, topHeight);
 
-        Drawable top = Tex.barTop;
-        float topWidth = width * value;
+        } else if (width > height){
 
-        if(topWidth > Core.atlas.find("bar-top").getWidth()){
-            top.draw(x, y, topWidth, height);
-        }else{
-            if(ScissorStack.pushScissors(scissor.set(x, y, topWidth, height))){
-                top.draw(x, y, Core.atlas.find("bar-top").getWidth(), height);
-                ScissorStack.popScissors();
+            Drawable bar = Tex.bar;
+
+            Draw.colorl(0.1f);
+            bar.draw(x, y, width, height);
+            Draw.color(color, blinkColor, blink);
+
+            Drawable top = Tex.barTop;
+
+            float topWidth = width * value;
+
+            if(topWidth > Core.atlas.find("bar-top").getWidth()){
+                top.draw(x, y, topWidth, height);
+            }else{
+                if(ScissorStack.pushScissors(scissor.set(x, y, topWidth, height))){
+                    top.draw(x, y, Core.atlas.find("bar-top").getWidth(), height);
+                    ScissorStack.popScissors();
+                }
             }
+
         }
 
         Draw.color();

@@ -31,7 +31,6 @@ import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.ui.Cicon;
 import mindustry.ui.dialogs.*;
-
 import static mindustry.Vars.*;
 
 public class HudFragment extends Fragment{
@@ -42,6 +41,9 @@ public class HudFragment extends Fragment{
     private Table lastUnlockLayout;
     private boolean shown = true;
     private float dsize = 47.2f;
+
+    public Mech mech = player.mech;
+    public Image avatarShip = new Image(mech.icon(Cicon.full));
 
     private long lastToast;
 
@@ -137,27 +139,54 @@ public class HudFragment extends Fragment{
                 }
             });
 
-            Table wavesMain, editorMain;
+            Table infoBar, userInfo, editorMain,infoPanel,avatar;
 
-            cont.stack(wavesMain = new Table(), editorMain = new Table()).height(wavesMain.getPrefHeight());
-
+            cont.stack(infoPanel = new Table(), infoBar = new Table(), avatar = new Table(), editorMain = new Table());
             {
-                wavesMain.visible(() -> shown && !state.isEditor());
-                wavesMain.top().left();
-                Stack stack = new Stack();
-                Button waves = new Button(Styles.waveb);
-                Table btable = new Table().margin(0);
+                infoPanel.margin(0);
+                infoPanel.top().left();
+                userInfo = new Table(Tex.infoPanel.tint(Pal.salmon));
+                userInfo.margin(0,0,0,11f);
 
-                stack.add(waves);
-                stack.add(btable);
+                //User info
+                avatar.update(()-> {
+                    if(player.mech != mech){
+                        mech = player.mech;
+                        ((TextureRegionDrawable)avatarShip.getDrawable()).setRegion(mech.icon(Cicon.full));
+                    }
+                });
 
-                addWaveTable(waves);
+                Pal.slatebluegray.a = 1f;
+                Table health = new Table(Tex.shipShape.tint(Pal.slatebluegray));
+                health.margin(0,15f,0,25f);
+                health.add(avatarShip);
+
+                avatar.add(health);
+                userInfo.left().add(avatar);
+
+                Pal.slatebluegray.a = 0.8f;
+                infoBar.background(Tex.infoPanel.tint(Pal.slatebluegray));
+                infoBar.visible(() -> shown && !state.isEditor());
+
+                Button waves = new Button(Styles.noneStyle);
+                Table btable = new Table();
+                waves.margin(0);
+
+                btable.margin(0,-33,0,0);
+
+                //Functions
                 addPlayButton(btable);
-                wavesMain.add(stack).width(dsize * 5 + 4f);
-                wavesMain.row();
-                wavesMain.table(Tex.button, t -> t.margin(10f).add(new Bar("boss.health", Pal.health, () -> state.boss() == null ? 0f : state.boss().healthf()).blink(Color.white))
-                .grow()).fillX().visible(() -> state.rules.waves && state.boss() != null).height(60f).get();
-                wavesMain.row();
+                addWaveTable(waves);
+
+                Table bar = new Table();
+                Bar teste = new Bar("empty2", Pal.accent, () -> player.healthf()).blink(Color.white);
+                bar.add(teste).height(56f).width(24f);
+                bar.margin(0,0,0,-140f);
+
+                //add
+                infoBar.add(bar,userInfo);
+                infoBar.add(waves).width(250f);
+                infoPanel.add(infoBar,btable);
             }
 
             {
@@ -170,7 +199,7 @@ public class HudFragment extends Fragment{
                         int i = 0;
                         for(Team team : Team.base()){
                             ImageButton button = teams.addImageButton(Tex.whiteui, Styles.clearTogglePartiali, 40f, () -> Call.setPlayerTeamEditor(player, team))
-                                .size(50f).margin(6f).get();
+                            .size(50f).margin(6f).get();
                             button.getImageCell().grow();
                             button.getStyle().imageUpColor = team.color;
                             button.update(() -> button.setChecked(player.getTeam() == team));
@@ -249,7 +278,7 @@ public class HudFragment extends Fragment{
                 info.label(() -> ping.get(netClient.getPing())).visible(net::client).left().style(Styles.outlineLabel);
             }).top().left();
         });
-        
+
         parent.fill(t -> {
             t.visible(() -> Core.settings.getBool("minimap") && !state.rules.tutorial);
             //minimap
@@ -257,7 +286,7 @@ public class HudFragment extends Fragment{
             t.row();
             //position
             t.label(() -> world.toTile(player.x) + "," + world.toTile(player.y))
-                .visible(() -> Core.settings.getBool("position") && !state.rules.tutorial);
+            .visible(() -> Core.settings.getBool("position") && !state.rules.tutorial);
             t.top().right();
         });
 
@@ -313,11 +342,11 @@ public class HudFragment extends Fragment{
                 t.clearChildren();
                 t.top().right().visible(() -> state.rules.tutorial);
                 t.stack(new Button(){{
-                    marginLeft(48f);
-                    labelWrap(() -> control.tutorial.stage.text() + (control.tutorial.canNext() ? "\n\n" + Core.bundle.get("tutorial.next") : "")).width(!Core.graphics.isPortrait() ? 400f : 160f).pad(2f);
-                    clicked(() -> control.tutorial.nextSentence());
-                    setDisabled(() -> !control.tutorial.canNext());
-                }},
+                            marginLeft(48f);
+                            labelWrap(() -> control.tutorial.stage.text() + (control.tutorial.canNext() ? "\n\n" + Core.bundle.get("tutorial.next") : "")).width(!Core.graphics.isPortrait() ? 400f : 160f).pad(2f);
+                            clicked(() -> control.tutorial.nextSentence());
+                            setDisabled(() -> !control.tutorial.canNext());
+                        }},
                 new Table(f -> {
                     f.left().addImageButton(Icon.left, Styles.emptyi, () -> {
                         control.tutorial.prevSentence();
@@ -551,9 +580,9 @@ public class HudFragment extends Fragment{
 
     private boolean inLaunchWave(){
         return world.isZone() &&
-            world.getZone().metCondition() &&
-            !net.client() &&
-            state.wave % world.getZone().launchPeriod == 0 && !spawner.isSpawning();
+        world.getZone().metCondition() &&
+        !net.client() &&
+        state.wave % world.getZone().launchPeriod == 0 && !spawner.isSpawning();
     }
 
     private boolean canLaunch(){
@@ -599,6 +628,7 @@ public class HudFragment extends Fragment{
         table.setName("waves");
         table.labelWrap(() -> {
             builder.setLength(0);
+            builder.append("[#" + Pal.accent + "]");
             builder.append(wavef.get(state.wave));
             builder.append("\n");
 
@@ -608,29 +638,31 @@ public class HudFragment extends Fragment{
                 builder.append("]");
 
                 if(!canLaunch()){
-                    builder.append(Core.bundle.get("launch.unable2"));
+                    builder.append(Core.bundle.get("launch.unable2").toUpperCase());
                 }else{
-                    builder.append(Core.bundle.get("launch"));
+                    builder.append(Core.bundle.get("launch").toUpperCase());
                     builder.append("\n");
-                    builder.append(Core.bundle.format("launch.next", state.wave + world.getZone().launchPeriod));
+                    builder.append(Core.bundle.format("launch.next", state.wave + world.getZone().launchPeriod).toUpperCase());
                     builder.append("\n");
                 }
                 builder.append("[]\n");
             }
 
-            if(state.enemies > 0){
-                if(state.enemies == 1){
-                    builder.append(enemyf.get(state.enemies));
-                }else{
-                    builder.append(enemiesf.get(state.enemies));
-                }
-                builder.append("\n");
-            }
-
             if(state.rules.waveTimer){
                 builder.append((state.rules.waitForWaveToEnd && state.enemies > 0 ? Core.bundle.get("wave.waveInProgress") : ( waitingf.get((int)(state.wavetime/60)))));
             }else if(state.enemies == 0){
+                builder.append("[#" + Color.white + "]");
                 builder.append(Core.bundle.get("waiting"));
+            }
+
+            if(state.enemies > 0){
+                if(state.enemies == 1){
+                    builder.append("[#" + Pal.salmon + "]");
+                    builder.append(enemyf.get(state.enemies));
+                }else{
+                    builder.append("[#" + Pal.salmon + "]");
+                    builder.append(enemiesf.get(state.enemies));
+                }
             }
 
             return builder;
@@ -650,7 +682,7 @@ public class HudFragment extends Fragment{
     }
 
     private void addPlayButton(Table table){
-        table.right().addImageButton(Icon.play, Styles.righti, 30f, () -> {
+        table.right().addImageButton(Icon.play,Styles.nWave,30f, () -> {
             if(net.client() && player.isAdmin){
                 Call.onAdminRequest(player, AdminAction.wave);
             }else if(inLaunchWave()){
@@ -658,7 +690,7 @@ public class HudFragment extends Fragment{
             }else{
                 state.wavetime = 0f;
             }
-        }).growY().fillX().right().width(40f)
+        }).growY().fillX().right().width(65f)
         .visible(this::canSkipWave);
     }
 }
