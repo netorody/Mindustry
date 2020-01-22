@@ -44,6 +44,8 @@ public class HudFragment extends Fragment{
 
     public Mech mech = player.mech;
     public Image avatarShip = new Image(mech.icon(Cicon.full));
+    float progress;
+    int bossNumber = 0;
 
     private long lastToast;
 
@@ -181,14 +183,45 @@ public class HudFragment extends Fragment{
                 infoBar.add(waves).width(250f);
                 infoPanel.add(infoBar,btable);
 
+                infoPanel.row();
+
+                infoPanel.table(Tex.barBottom.tint(Pal.darkbluegray), t -> t.margin(5,0,5,10).add(new Bar("boss.health", Pal.health, () -> state.boss() == null ? 0f : state.boss().healthf()).blink(Color.white))
+                .grow()).fillX().visible(() -> state.rules.waves && state.boss() != null).height(50f).width(infoPanel.getPrefWidth()-59f).left().get();
+
+                TextButton boss = new TextButton("",Styles.nboss);
+                infoPanel.table(t -> t.add(boss).height(30).visible(() -> state.rules.waves && state.boss() != null && bossNumber > 1)).visible(() -> state.rules.waves && state.boss() != null).width(40).height(30).marginLeft(-178);
+
+                progress = Mathf.lerpDelta(progress, player.spawner != null ? 0f : 1f, 0.06f);
+
+                health.table( t -> {
+                    t.addRect((x, y, width, height) -> {
+                        TextureRegion shader = mech.icon(Cicon.full);
+                        Shaders.build.region = shader;
+                        Shaders.build.progress = progress;
+                        Shaders.build.color.set(Pal.accent);
+                        Shaders.build.time = Time.time() / 10f;
+
+                        if(player.spawner != null){
+                            Draw.shader(Shaders.build,true);
+                            Draw.rect(shader,x-24,y+height/2,48,48);
+                            Draw.shader();
+                        }
+                    });
+                });
+
+
                 //User info
                 avatar.update(()-> {
                     if(player.mech != mech){
                         mech = player.mech;
                         ((TextureRegionDrawable)avatarShip.getDrawable()).setRegion(mech.icon(Cicon.full));
                     }
-                });
 
+                    if(state.rules.waves && state.boss() != null){
+                        bossNumber = unitGroup.count(u -> u.isBoss() && u.getTeam() == state.rules.waveTeam);
+                        boss.setText(String.valueOf("+" + bossNumber));
+                    }
+                });
             }
 
             {

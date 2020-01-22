@@ -87,6 +87,8 @@ public class Pal{
 
     salmon = Color.valueOf("e78979"),
     slatebluegray = Color.valueOf("383c4c"),
-    lgslategray = Color.valueOf("6d7082");
+    darkbluegray = Color.valueOf("272c39"),
+    lgslategray = Color.valueOf("6d7082"),
+    darkhealth = Color.valueOf("c12817");
 
 }

@@ -25,7 +25,7 @@ import static mindustry.gen.Tex.*;
 public class Styles{
     public static Drawable black, black9, black8, black6, black3, none, flatDown, flatOver;
     public static ButtonStyle defaultb, waveb, noneStyle;
-    public static TextButtonStyle defaultt, squaret, nodet, cleart, discordt, infot, clearPartialt, clearTogglet, clearToggleMenut, togglet, transt;
+    public static TextButtonStyle nboss, defaultt, squaret, nodet, cleart, discordt, infot, clearPartialt, clearTogglet, clearToggleMenut, togglet, transt;
     public static ImageButtonStyle nWave, defaulti, nodei, righti, emptyi, emptytogglei, selecti, cleari, clearFulli, clearPartiali, clearPartial2i, clearTogglei, clearTransi, clearToggleTransi, clearTogglePartiali;
     public static ScrollPaneStyle defaultPane, horizontalPane, smallPane;
     public static KeybindDialogStyle defaultKeybindDialog;
@@ -50,6 +50,17 @@ public class Styles{
             up = none;
             over = none;
             disabled = none;
+        }};
+
+        nboss = new TextButtonStyle(){{
+            over = none;
+            disabled = none;
+            font = Fonts.def;
+            fontColor = Color.white;
+            disabledFontColor = Color.gray;
+            down = none;
+            up = Tex.bossNumber.tint(Pal.darkhealth);
+
         }};
 
         defaultb = new ButtonStyle(){{
